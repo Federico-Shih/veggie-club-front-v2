@@ -4,13 +4,13 @@ import styles from "./taglist.module.css";
 
 interface IProps {
   categories: Category[];
-  selectedId: number;
-  onSelectTag: (selectedId: number) => void;
+  selectedId: string;
+  onSelectTag: (selectedId: string) => void;
 }
 
 function TagList({ categories, selectedId, onSelectTag }: IProps) {
   return (
-    <HStack spacing="10px">
+    <HStack spacing="10px" overflowX="scroll">
       {
         categories.map(({ name, id }) => (
           <div key={id} className={styles.tag}>
@@ -21,8 +21,11 @@ function TagList({ categories, selectedId, onSelectTag }: IProps) {
                 onSelectTag(id);
               }}
               colorScheme={"orange"}
+              style={{
+                textTransform: "capitalize",
+              }}
             >
-              {name}
+              {name.toLowerCase()}
             </Tag>
           </div>
         ))

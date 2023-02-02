@@ -4,6 +4,7 @@ import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOve
 import Image from "next/image";
 import { Box, HStack, Tag, VStack } from "@chakra-ui/react";
 import { useMemo } from "react";
+import { getImageUrl } from "../menu.helpers";
 
 interface IProps {
   food: Food | null;
@@ -14,13 +15,12 @@ interface IProps {
 
 function FoodModal({ food, categories: loadedCategories, isOpen, onClose }: IProps) {
   const categoryMapper = useMemo(() => {
-    const mapper: Map<number, string> = new Map<number, string>();
+    const mapper: Map<string, string> = new Map<string, string>();
     loadedCategories.forEach((category) => {
       mapper.set(category.id, category.name);
     });
     return mapper;
   }, [loadedCategories]);
-
   if (food === null) {
     return <></>;
   }
@@ -31,8 +31,8 @@ function FoodModal({ food, categories: loadedCategories, isOpen, onClose }: IPro
       />
       <ModalContent>
         <ModalHeader style={{ position: "relative" }}>
-          <div style={{ height: "10em" }}>
-            <Image fill src={imageSource} alt={name} style={{ objectFit: "cover" }} />
+          <div style={{ height: "10em", position: "relative" }}>
+            <Image fill src={getImageUrl(imageSource)} alt={name} style={{ objectFit: "cover" }} />
           </div>
         </ModalHeader>
         <ModalCloseButton />

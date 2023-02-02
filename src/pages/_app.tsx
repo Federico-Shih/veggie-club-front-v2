@@ -1,34 +1,20 @@
 import type { AppProps } from "next/app";
 import { ChakraProvider } from "@chakra-ui/provider";
-import { extendTheme } from "@chakra-ui/react";
 import { appWithTranslation } from "next-i18next";
-
-const colors = {
-  brand: {
-    900: "#FF5C00",
-  },
-};
-
-const textStyles = {
-  h1: {
-    fontSize: ["24px", "36px"],
-    fontWeight: "regular",
-    lineHeight: "110%",
-    letterSpacing: "-2%",
-  },
-};
-
-const theme = extendTheme(
-  {
-    colors,
-    textStyles,
-  });
+import { theme } from "@/styles/theme";
+import { useState } from "react";
+import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 
 function App({ Component, pageProps }: AppProps) {
+  const [queryClient] = useState(() => new QueryClient({ defaultOptions: { queries: { staleTime: 1000 * 20 } } }));
   return (
-    <ChakraProvider theme={theme}>
-      <Component {...pageProps} />
-    </ChakraProvider>
+    <QueryClientProvider client={queryClient}>
+      <Hydrate state={pageProps.dehydratedState}>
+        <ChakraProvider theme={theme}>
+          <Component {...pageProps} />
+        </ChakraProvider>
+      </Hydrate>
+    </QueryClientProvider>
   );
 }
 
