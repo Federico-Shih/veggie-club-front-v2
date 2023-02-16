@@ -3,3 +3,7 @@ export type Category = {
   name: string;
 }
 
+export type CategoryDTO = {
+  name: string;
+  id?: string;
+}

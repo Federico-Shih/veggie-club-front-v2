@@ -1,6 +1,6 @@
 import { Category } from "@/domain/categories";
 import { HStack, Tag } from "@chakra-ui/react";
-import styles from "./taglist.module.css";
+import styles from "../menu/taglist.module.css";
 
 interface IProps {
   categories: Category[];
@@ -18,7 +18,11 @@ function TagList({ categories, selectedId, onSelectTag }: IProps) {
               size={"lg"}
               variant={(selectedId === id) ? "solid" : "outline"}
               onClick={() => {
-                onSelectTag(id);
+                if (selectedId !== id) {
+                  onSelectTag(id);
+                } else {
+                  onSelectTag("");
+                }
               }}
               colorScheme={"orange"}
               style={{

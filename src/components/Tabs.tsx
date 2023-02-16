@@ -1,31 +1,24 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { useTranslation } from "next-i18next";
-import IntroductionPage from "@components/containers/intro/IntroductionPage";
-import MenuPage from "@components/containers/menu/MenuPage";
-import ContactPage from "@components/containers/contact/ContactPage";
 
-const tabInfo = [
-  {
-    tabKey: "tabs.menu",
-    PanelComponent: MenuPage,
-  },
-  {
-    tabKey: "tabs.introduction",
-    PanelComponent: IntroductionPage,
-  },
-  {
-    tabKey: "tabs.contact",
-    PanelComponent: ContactPage,
-  },
-];
 
-const TabsPage = () => {
+type TabData = {
+  tabKey: string;
+  PanelComponent: () => JSX.Element;
+}
+
+interface IProps {
+  tabs: TabData[];
+  defaultIndex?: number;
+}
+
+const TabsPage = ({ tabs, defaultIndex }: IProps) => {
   const { t } = useTranslation();
   return (
-    <Tabs isLazy isFitted w="100vw">
+    <Tabs isLazy isFitted w="100vw" defaultIndex={defaultIndex || 0}>
       <TabList>
         {
-          tabInfo.map(({ tabKey }) => (
+          tabs.map(({ tabKey }) => (
               <Tab
                 key={tabKey}
                 _selected={{ borderBottomColor: "brand.900", color: "brand.900" }}
@@ -39,7 +32,7 @@ const TabsPage = () => {
       </TabList>
       <TabPanels>
         {
-          tabInfo.map(({ PanelComponent }, index) => (
+          tabs.map(({ PanelComponent }, index) => (
             <TabPanel key={index} pl={0} pr={0}>
               <PanelComponent />
             </TabPanel>

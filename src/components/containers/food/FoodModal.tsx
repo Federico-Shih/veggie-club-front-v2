@@ -3,8 +3,8 @@ import { Category } from "@/domain/categories";
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from "@chakra-ui/modal";
 import Image from "next/image";
 import { Box, HStack, Tag, VStack } from "@chakra-ui/react";
-import { useMemo } from "react";
-import { getImageUrl } from "../menu.helpers";
+import React, { useMemo } from "react";
+import { getImageUrl, mapCategories } from "../menu.helpers";
 
 interface IProps {
   food: Food | null;
@@ -15,11 +15,7 @@ interface IProps {
 
 function FoodModal({ food, categories: loadedCategories, isOpen, onClose }: IProps) {
   const categoryMapper = useMemo(() => {
-    const mapper: Map<string, string> = new Map<string, string>();
-    loadedCategories.forEach((category) => {
-      mapper.set(category.id, category.name);
-    });
-    return mapper;
+    return mapCategories(loadedCategories);
   }, [loadedCategories]);
   if (food === null) {
     return <></>;
@@ -48,7 +44,7 @@ function FoodModal({ food, categories: loadedCategories, isOpen, onClose }: IPro
               {categories.map((categoryId) => (
                 categoryMapper.has(categoryId) &&
                 <Tag key={categoryId}>
-                  {categoryMapper.get(categoryId)}
+                  {categoryMapper.get(categoryId)?.name}
                 </Tag>
               ))}
             </HStack>
@@ -59,4 +55,4 @@ function FoodModal({ food, categories: loadedCategories, isOpen, onClose }: IPro
   );
 }
 
-export default FoodModal;
+export default React.memo(FoodModal);

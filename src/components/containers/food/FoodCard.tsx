@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader } from "@chakra-ui/card";
 import Image from "next/image";
 import { Food } from "@/domain/foods";
-import { getImageUrl } from "@components/containers/menu/menu.helpers";
+import { getImageUrl } from "@components/containers/menu.helpers";
 
 interface IProps {
   food: Food;
@@ -15,6 +15,7 @@ function FoodCard({ food, onClick }: IProps) {
       <CardHeader style={{ position: "relative", height: "6em" }}>
         <Image
           fill
+          priority={false}
           sizes="(max-width:768px) 40vw, (max-width: 1200px) 30vw, 150px"
           src={getImageUrl(food.imageSource)}
           alt={food.name}

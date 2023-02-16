@@ -1,8 +1,71 @@
 {
   "title": "Veggie club",
+  "error": {
+    "unknown": "Unknown error"
+  },
   "tabs": {
     "menu": "Menú",
     "introduction": "Nosotros",
-    "contact": "Contacto"
-  }
+    "contact": "Contacto",
+    "categories": "Categorías",
+    "messages": "Mensajes"
+  },
+  "auth": {
+    "lengthError": "% es requerido.",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "correo@electronico.com",
+    "password": "Contraseña",
+    "login": "Iniciar sesión",
+    "error": {
+      "unknown": "Error desconocido, comunicarse con desarrollador.",
+      "user": "Incorrecto usuario/contraseña"
+    }
+  },
+  "admin": {
+    "edit": {
+      "name": "Nombre:",
+      "description": "Descripción:",
+      "categories": "Categorías:",
+      "weekdays": "Días de la semana:",
+      "active": "Activo",
+      "image": "Seleccione una imagen",
+      "save": {
+        "error": {
+          "title": "Error guardando.",
+          "generic-error": "Desconocido, comunicarse con Fede.",
+          "image": "Error guardando imagen."
+        },
+        "success": {
+          "title": "Se guardó correctamente"
+        }
+      }
+    },
+    "delete": {
+      "title": "Borrar plato",
+      "body": "Se va a borrar el plato '%'. Confirmar el borrado.",
+      "cancelbutton": "Cancelar",
+      "deletebutton": "Borrar",
+      "success": "Plato borrado correctamente.",
+      "error": {
+        "generic-error": "Error desconocido borrando."
+      }
+    },
+    "category": {
+      "add": "Agregar categoría",
+      "save": {
+        "success": "Categoría guardado correctamente.",
+        "error": "Error desconocido guardando categoría.",
+        "add": "Guardar"
+      },
+      "delete": {
+        "success": "Categoría eliminado correctamente.",
+        "error": "Error desconocido borrando categoría",
+        "title": "Borrar categoría",
+        "description": "Se va a borrar la categoría '%'. Confirmar el borrado.",
+        "cancel": "Cancelar",
+        "delete": "Borrar"
+      }
+    }
+  },
+  "noelements": "No hay platos en esta categoría."
 }

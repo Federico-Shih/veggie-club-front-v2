@@ -1,34 +1,20 @@
-import TagList from "@components/containers/menu/TagList";
-import { useMemo, useState } from "react";
-import { Grid, GridItem, useDisclosure, VStack } from "@chakra-ui/react";
+import TagList from "@components/containers/categories/TagList";
+import { useState } from "react";
+import { CircularProgress, Grid, GridItem, Skeleton, Stack, useDisclosure, VStack } from "@chakra-ui/react";
 import { Food } from "@/domain/foods";
-import FoodCard from "@components/containers/menu/food/FoodCard";
-import FoodModal from "@components/containers/menu/food/FoodModal";
+import FoodCard from "@components/containers/food/FoodCard";
+import FoodModal from "@components/containers/food/FoodModal";
 import { useCategories, useFoods } from "./menu.hooks";
-import { dehydrate, QueryClient } from "react-query";
-import { getCategories } from "@/api-functions/menu/menu.query";
 import { DaySelector } from "@components/containers/menu/day-selector/DaySelector";
-
-export async function getServerSideProps() {
-  const queryClient = new QueryClient();
-  await queryClient.prefetchQuery("category", getCategories);
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
-}
+import InfiniteScroll from "react-infinite-scroll-component";
 
 function MenuPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [shownFood, setShownFood] = useState<Food | null>(null);
-  const [selectedId, setSelected] = useState("");
-  const [shownDay, setShownDay] = useState(new Date().getDay());
+
   const { data: categories, isSuccess: isCategorySuccess } = useCategories();
-  const { data: foods, isSuccess: isFoodSuccess } = useFoods(shownDay);
-  const filteredFoods = useMemo(() => {
-    return (foods || []).filter((food) => (selectedId.length === 0 || food.categories.includes(selectedId)));
-  }, [foods, selectedId]);
+  const { values, actions } = useFoods(16);
+
   return (
     <>
       <VStack gap={5} style={{ paddingLeft: 16, paddingRight: 16 }}>
@@ -37,16 +23,21 @@ function MenuPage() {
             isCategorySuccess && (
               <TagList
                 categories={categories}
-                selectedId={selectedId}
-                onSelectTag={setSelected}
+                selectedId={values.category}
+                onSelectTag={actions.switchCategories}
               />
             )
           }
         </div>
-        <Grid style={{ width: "100%" }} templateColumns={"repeat(2, 1fr)"} gap={4}>
-          {
-            isFoodSuccess && (
-              filteredFoods.map((food) => {
+        <InfiniteScroll
+          next={actions.fetchNextPage}
+          hasMore={!!values.pagination?.nextCursor}
+          dataLength={values.data.length}
+          loader={<CircularProgress />}
+        >
+          <Grid style={{ width: "100%" }} templateColumns={"repeat(2, 1fr)"} gap={4}>
+            {
+              values.data.map((food) => {
                 return (
                   <GridItem key={food.id} w={"100%"}>
                     <FoodCard
@@ -59,12 +50,21 @@ function MenuPage() {
                   </GridItem>
                 );
               })
-            )
-          }
-        </Grid>
+            }
+          </Grid>
+        </InfiniteScroll>
+        {
+          (values.data.length === 0 && values.loading) && (
+            <Stack>
+              <Skeleton height="20px" />
+              <Skeleton height="20px" />
+              <Skeleton height="20px" />
+            </Stack>
+          )
+        }
       </VStack>
       <FoodModal food={shownFood} categories={categories || []} isOpen={isOpen} onClose={onClose} />
-      <DaySelector setDay={setShownDay} initialDay={shownDay} />
+      <DaySelector setDay={actions.setDay} initialDay={values.shownDay} />
     </>
   );
 }
