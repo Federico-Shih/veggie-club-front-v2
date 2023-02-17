@@ -9,13 +9,10 @@ interface IProps {
   category: Category;
   onSave: (category: Category) => void;
   onDelete: (category: Category) => void;
+  isLoading: boolean;
 }
 
-/*
-<TagLabel>{category.name}</TagLabel>
- */
-
-function CategoryEdit({ category, onSave, onDelete }: IProps) {
+function CategoryEdit({ category, onSave, onDelete, isLoading }: IProps) {
   const [categoryName, setCategoryName] = useState(category.name);
   return (
     <Editable
@@ -36,6 +33,8 @@ function CategoryEdit({ category, onSave, onDelete }: IProps) {
         colorScheme={"red"}
         variant={"ghost"}
         onClick={() => onDelete(category)}
+        isLoading={isLoading}
+        disabled={isLoading}
       />
     </Editable>
   );

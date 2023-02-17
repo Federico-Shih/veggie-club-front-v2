@@ -8,11 +8,11 @@ interface IProps<T> {
   getLabel: (element: T) => string;
 }
 
-function MultipleSelector<T>(props: IProps<T>) {
-  const { addElement, removeElement, selected, options, getLabel } = props;
+function MultipleSelector<T>({ addElement, removeElement, selected, options, getLabel }: IProps<T>) {
   const toggleElement = (isSelected: boolean, element: T) => {
     return isSelected ? removeElement(element) : addElement(element);
   };
+
   return (
     <Flex wrap={"wrap"} gap={2}>
       {

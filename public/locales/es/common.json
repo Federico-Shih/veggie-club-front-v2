@@ -67,5 +67,13 @@
       }
     }
   },
-  "noelements": "No hay platos en esta categoría."
+  "noelements": "No hay platos en esta categoría.",
+  "delete": "Borrar",
+  "message-add": "Agregar mensaje",
+  "no-messages": "No tienes mensajes todavía.",
+  "created-message": "Mensaje agregado",
+  "error-creating-message": "Error creando mensaje",
+  "deleted-message": "Mensaje borrado",
+  "error-deleting-message": "Error borrando mensaje",
+  "alldays": "todos"
 }

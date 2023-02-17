@@ -1,12 +1,21 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from "react-query";
 import { getAllFoods } from "@/api-functions/menu/menu.query";
-import { deleteImage, removeCategory, removeFood, saveCategory, saveFood } from "@/api-functions/admin/admin.mutation";
+import {
+  deleteImage,
+  removeCategory,
+  removeFood,
+  saveCategory,
+  saveFood,
+  uploadImage,
+} from "@/api-functions/admin/admin.mutation";
 import { AxiosError } from "axios";
-import { Food } from "@/domain/foods";
+import { Food, FoodDTO } from "@/domain/foods";
 import { useTranslation } from "next-i18next";
 import { useToast } from "@chakra-ui/react";
 import useAuth from "@components/containers/auth/useAuth";
 import { Category } from "@/domain/categories";
+import { v4 as uuid } from "uuid";
+import mime2ext from "mime2ext";
 
 
 export const useAdminFoods = (categoryId: string, limit: 16) => {
@@ -24,17 +33,46 @@ export const useAdminFoods = (categoryId: string, limit: 16) => {
 };
 
 interface IProps {
-  setEditedFood: (food: Food) => void;
+  setEditedFood: (food: Food | null) => void;
 }
 
+class FirebaseError extends Error {
+  constructor() {
+    super();
+  }
+}
+
+// TODO: use mutation result to modify current queryclient data
 export const useSaveFood = ({ setEditedFood }: IProps) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const toast = useToast();
 
   return useMutation({
-    mutationFn: saveFood,
-    onSuccess: async (result, variables, context) => {
+    mutationFn: async ({ foodDTO, prevFood }: { foodDTO: FoodDTO, prevFood: Food | null }) => {
+      if (!prevFood?.id || foodDTO.imageSource instanceof Blob) {
+        // upload Image
+        let imageToUpload: Blob;
+        if (foodDTO.imageSource === "") {
+          const emptyImage = await fetch("/empty.jpg");
+          imageToUpload = await emptyImage.blob();
+        } else {
+          imageToUpload = foodDTO.imageSource as Blob;
+        }
+        let identifier = uuid();
+        if (prevFood?.imageSource) {
+          identifier = prevFood.imageSource.split(".")[0];
+        }
+        try {
+          await uploadImage(imageToUpload, `${identifier}.${mime2ext(imageToUpload.type)}`);
+        } catch (err) {
+          throw new FirebaseError();
+        }
+        foodDTO.imageSource = `${identifier}.webp`;
+      }
+      return saveFood(foodDTO);
+    },
+    onSuccess: async (result) => {
       setEditedFood(result);
       await queryClient.invalidateQueries(["admin", "food"]);
       await queryClient.invalidateQueries(["food"]);
@@ -45,7 +83,16 @@ export const useSaveFood = ({ setEditedFood }: IProps) => {
         isClosable: true,
       });
     },
-    onError: async (error, variables, context) => {
+    onError: async (error) => {
+      if (error instanceof FirebaseError) {
+        toast({
+          title: t("admin.edit.save.error.image"),
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+        });
+        return;
+      }
       toast({
         title: t("admin.edit.save.error.title"),
         description: t("admin.edit.save.error.generic-error"),
@@ -66,7 +113,7 @@ export const useDeleteFood = (onCloseModal: () => void) => {
       await deleteImage(food.imageSource);
       return removeFood(food);
     },
-    onSuccess: async () => {
+    onSuccess: async (_, deleted) => {
       await queryClient.invalidateQueries(["admin", "food"]);
       await queryClient.invalidateQueries(["food"]);
       onCloseModal();
@@ -88,7 +135,7 @@ export const useDeleteFood = (onCloseModal: () => void) => {
   });
 };
 
-export const useSaveCategory = () => {
+export const useSaveCategory = (onSuccessClose: () => void) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const toast = useToast();
@@ -96,7 +143,7 @@ export const useSaveCategory = () => {
   return useMutation({
     mutationFn: saveCategory,
     onSuccess: async (category) => {
-      console.log(queryClient.getQueryData("category"));
+      onSuccessClose();
       queryClient.setQueryData("category", (prev: Category[] | undefined) => {
         if (prev) {
           const index = prev.findIndex((cat) => (cat.id === category.id));
@@ -136,7 +183,6 @@ export const useDeleteCategory = (onCloseModal: () => void) => {
       mutationFn: removeCategory,
       onSuccess: async (data, category) => {
         queryClient.setQueryData("category", (prev: Category[] | undefined) => {
-          console.log(queryClient.getQueryData("category"));
           return prev?.filter((value) => value.id !== category.id) || [];
         });
         toast({

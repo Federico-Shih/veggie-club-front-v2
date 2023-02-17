@@ -1,16 +1,13 @@
 import { useCategories } from "@components/containers/menu/menu.hooks";
 import { Button, Center, CircularProgress, Grid, GridItem, useDisclosure, useToast, VStack } from "@chakra-ui/react";
 import { MdAdd } from "react-icons/md";
-import { v4 as uuid } from "uuid";
-import mime2ext from "mime2ext";
 
 import TagList from "@components/containers/categories/TagList";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useAdminFoods, useDeleteFood, useSaveFood } from "@components/containers/admin/menu/admin.hooks";
 import FoodCard from "@components/containers/food/FoodCard";
 import FoodAdminModal from "@components/containers/food/FoodAdminModal";
-import { Food, FoodDTO } from "@/domain/foods";
-import { uploadImage } from "@/api-functions/admin/admin.mutation";
+import { Food } from "@/domain/foods";
 import { useTranslation } from "next-i18next";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FoodDeleteModal from "@components/containers/food/FoodDeleteModal";
@@ -33,39 +30,9 @@ function AdminMenuPage() {
     hasNextPage,
     isLoading: foodIsLoading,
   } = useAdminFoods(selectedId, 16);
-  const { mutate: mutateFood } = useSaveFood({ setEditedFood });
+  const { mutate: mutateFood, isLoading: isSaving } = useSaveFood({ setEditedFood });
   const { mutate: onDeleteFood, isLoading } = useDeleteFood(onCloseAdmin);
 
-  // Ver forma de integrar esto al mutate.
-  const onSaveFood = useCallback(async (food: FoodDTO) => {
-    if (!editedFood?.id || food.imageSource instanceof Blob) {
-      // upload Image
-      let imageToUpload: Blob;
-      if (food.imageSource === "") {
-        const emptyImage = await fetch("/empty.jpg");
-        imageToUpload = await emptyImage.blob();
-      } else {
-        imageToUpload = food.imageSource as Blob;
-      }
-      let identifier = uuid();
-      if (editedFood?.imageSource) {
-        identifier = editedFood.imageSource.split(".")[0];
-      }
-      try {
-        await uploadImage(imageToUpload, `${identifier}.${mime2ext(imageToUpload.type)}`);
-      } catch (err) {
-        toast({
-          title: t("admin.edit.save.error.image"),
-          status: "error",
-          duration: 2000,
-          isClosable: true,
-        });
-        return;
-      }
-      food.imageSource = `${identifier}.webp`;
-    }
-    await mutateFood(food);
-  }, [editedFood?.id, editedFood?.imageSource, mutateFood, t, toast]);
   return (
     <>
       <VStack gap={5} style={{ paddingLeft: 16, paddingRight: 16 }}>
@@ -131,8 +98,9 @@ function AdminMenuPage() {
           onDelete={() => {
             onOpenDelete();
           }}
-          onSave={onSaveFood}
+          onSave={mutateFood}
           isDeleting={isLoading}
+          isSaving={isSaving}
         />
         <FoodDeleteModal
           isOpen={isDeleteOpen}

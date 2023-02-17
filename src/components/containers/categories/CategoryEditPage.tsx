@@ -16,6 +16,24 @@ import {
 } from "@chakra-ui/modal";
 import CategoryAdd from "@components/containers/categories/category/CategoryAdd";
 
+interface MutableCategoryProps {
+  category: Category;
+  onDelete: (category: Category) => void;
+}
+
+function MutableCategoryEdit({ category, onDelete }: MutableCategoryProps) {
+  const { mutate: onSaveCategory, isLoading } = useSaveCategory(() => {
+  });
+  return (
+    <CategoryEdit
+      category={category}
+      onSave={onSaveCategory}
+      onDelete={onDelete}
+      isLoading={isLoading}
+    />
+  );
+}
+
 function CategoryEditPage() {
   const {
     isOpen: isDeletingOpen,
@@ -33,9 +51,8 @@ function CategoryEditPage() {
   const [deletingCategory, setDeleting] = useState<Category | null>(null);
 
   const { data, isLoading } = useCategories();
-
-  const { mutate: onSaveCategory } = useSaveCategory();
-  const { mutate: onDeleteCategory } = useDeleteCategory(onDeletingClose);
+  const { mutate: onSaveCategory, isLoading: isAddLoading } = useSaveCategory(onAddingClose);
+  const { mutate: onDeleteCategory, isLoading: isDeleteLoading } = useDeleteCategory(onDeletingClose);
 
   return (
     <Container>
@@ -47,9 +64,8 @@ function CategoryEditPage() {
                 key={category.id}
                 style={{ width: "100%" }}
               >
-                <CategoryEdit
+                <MutableCategoryEdit
                   category={category}
-                  onSave={onSaveCategory}
                   onDelete={(category) => {
                     setDeleting(category);
                     onDeletingOpen();
@@ -73,7 +89,15 @@ function CategoryEditPage() {
       >
         {t("admin.category.add")}
       </Button>
-      <CategoryAdd isOpen={isAddingOpen} onClose={onAddingClose} onSubmit={onSaveCategory} />
+      <CategoryAdd
+        isLoading={isAddLoading}
+        isOpen={isAddingOpen}
+        onClose={onAddingClose}
+        onSubmit={
+          async (categoryDTO) => {
+            await onSaveCategory(categoryDTO);
+          }}
+      />
       <AlertDialog
         isOpen={isDeletingOpen}
         leastDestructiveRef={cancelRef}
@@ -93,11 +117,19 @@ function CategoryEditPage() {
               <Button ref={cancelRef} onClick={onDeletingClose}>
                 {t("admin.category.delete.cancel")}
               </Button>
-              <Button colorScheme="red" onClick={() => {
-                if (deletingCategory) {
-                  onDeleteCategory(deletingCategory);
+              <Button
+                colorScheme="red"
+                onClick={
+                  () => {
+                    if (deletingCategory) {
+                      onDeleteCategory(deletingCategory);
+                    }
+                  }
                 }
-              }} ml={3}>
+                ml={3}
+                isLoading={isDeleteLoading}
+                disabled={isDeleteLoading}
+              >
                 {t("admin.category.delete.delete")}
               </Button>
             </AlertDialogFooter>

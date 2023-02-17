@@ -5,6 +5,7 @@ import { TabsPage } from "@components/Tabs";
 import { AuthGuard } from "@components/guards/AuthGuard";
 import AdminMenuPage from "@components/containers/admin/menu/AdminMenuPage";
 import CategoryEditPage from "@components/containers/categories/CategoryEditPage";
+import MessagesAdminPage from "@components/containers/messages/MessagesAdminPage";
 
 const tabInfo = [
   {
@@ -17,7 +18,7 @@ const tabInfo = [
   },
   {
     tabKey: "tabs.messages",
-    PanelComponent: () => <></>,
+    PanelComponent: () => <MessagesAdminPage />,
   },
 ];
 

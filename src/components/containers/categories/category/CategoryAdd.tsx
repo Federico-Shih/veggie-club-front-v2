@@ -7,17 +7,15 @@ import { CategoryDTO } from "@/domain/categories";
 interface IProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (categoryDTO: CategoryDTO) => void;
+  onSubmit: (categoryDTO: CategoryDTO) => Promise<void>;
+  isLoading: boolean;
 }
 
-function CategoryAdd({ isOpen, onClose, onSubmit }: IProps) {
+function CategoryAdd({ isOpen, onClose, onSubmit, isLoading }: IProps) {
   const { t } = useTranslation();
   const [categoryName, setCategoryName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const onSubmitClicked = async () => {
-    setLoading(true);
-    onSubmit({ name: categoryName });
-    setLoading(false);
+  const onSubmitClicked = () => {
+    return onSubmit({ name: categoryName });
   };
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -36,7 +34,7 @@ function CategoryAdd({ isOpen, onClose, onSubmit }: IProps) {
           <Button colorScheme={"red"} onClick={onClose} marginRight={5}>
             {t("admin.category.delete.cancel")}
           </Button>
-          <Button colorScheme={"green"} onClick={onSubmitClicked} isLoading={loading} disabled={loading}>
+          <Button colorScheme={"green"} onClick={onSubmitClicked} isLoading={isLoading} disabled={isLoading}>
             {t("admin.category.save.add")}
           </Button>
         </ModalFooter>

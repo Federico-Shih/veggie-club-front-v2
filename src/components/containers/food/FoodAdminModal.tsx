@@ -23,13 +23,14 @@ import { dayMapper } from "@components/containers/menu/day-selector/DaySelector"
 import EditImageModal from "@components/containers/food/image/EditImageModal";
 import SelectImageInput from "@components/containers/food/image/SelectImageInput";
 import { MdDelete, MdSave } from "react-icons/md";
+import _ from "lodash";
 
 const emptyFood: FoodDTO = {
   name: "",
   description: "",
   imageSource: "",
   categories: [],
-  weekdays: [],
+  weekdays: [0, 1, 2, 3, 4, 5, 6],
   active: true,
 };
 
@@ -42,9 +43,10 @@ interface IProps {
   categories: Category[];
   isOpen: boolean;
   onClose: () => void;
-  onSave: (food: FoodDTO) => Promise<void>;
+  onSave: (params: { foodDTO: FoodDTO, prevFood: Food | null }) => void;
   onDelete: () => void;
   isDeleting: boolean;
+  isSaving: boolean;
 }
 
 function FoodAdminModal({
@@ -54,7 +56,8 @@ function FoodAdminModal({
                           onClose,
                           onSave,
                           onDelete,
-                          isDeleting = true,
+                          isDeleting,
+                          isSaving,
                         }: IProps) {
   const { t } = useTranslation();
   const [selectedImage, setSelectedImage] = useState("");
@@ -91,16 +94,19 @@ function FoodAdminModal({
             initialValues={food || emptyFood}
             onSubmit={
               async (values, actions) => {
-                if (editedImageBlob) {
-                  values.imageSource = editedImageBlob;
+                if (_.isEqual(values, food)) {
+                  return;
                 }
-                await onSave(values);
-                actions.setSubmitting(false);
+                const submitValues = { ...values };
+                if (editedImageBlob) {
+                  submitValues.imageSource = editedImageBlob;
+                }
+                await onSave({ foodDTO: submitValues, prevFood: food });
               }
             }
           >
             {
-              ({ isSubmitting, values }) => (
+              ({ values }) => (
                 <Form>
                   <ModalHeader />
                   <div style={{ marginTop: 10 }}>
@@ -198,8 +204,8 @@ function FoodAdminModal({
                       <Flex gap={5}>
                         <Button
                           type={"submit"}
-                          isLoading={isSubmitting}
-                          disabled={isSubmitting}
+                          isLoading={isSaving}
+                          disabled={isSaving}
                           colorScheme={"green"}
                           leftIcon={<MdSave />}
                         >
