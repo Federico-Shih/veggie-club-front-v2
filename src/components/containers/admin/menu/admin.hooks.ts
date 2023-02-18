@@ -16,6 +16,7 @@ import useAuth from "@components/containers/auth/useAuth";
 import { Category } from "@/domain/categories";
 import { v4 as uuid } from "uuid";
 import mime2ext from "mime2ext";
+import { FirebaseError } from "@firebase/app";
 
 
 export const useAdminFoods = (categoryId: string, limit: 16) => {
@@ -36,12 +37,6 @@ interface IProps {
   setEditedFood: (food: Food | null) => void;
 }
 
-class FirebaseError extends Error {
-  constructor() {
-    super();
-  }
-}
-
 // TODO: use mutation result to modify current queryclient data
 export const useSaveFood = ({ setEditedFood }: IProps) => {
   const queryClient = useQueryClient();
@@ -50,24 +45,14 @@ export const useSaveFood = ({ setEditedFood }: IProps) => {
 
   return useMutation({
     mutationFn: async ({ foodDTO, prevFood }: { foodDTO: FoodDTO, prevFood: Food | null }) => {
-      if (!prevFood?.id || foodDTO.imageSource instanceof Blob) {
+      if (foodDTO.imageSource instanceof Blob) {
         // upload Image
-        let imageToUpload: Blob;
-        if (foodDTO.imageSource === "") {
-          const emptyImage = await fetch("/empty.jpg");
-          imageToUpload = await emptyImage.blob();
-        } else {
-          imageToUpload = foodDTO.imageSource as Blob;
-        }
+        let imageToUpload: Blob = foodDTO.imageSource as Blob;
         let identifier = uuid();
         if (prevFood?.imageSource) {
           identifier = prevFood.imageSource.split(".")[0];
         }
-        try {
-          await uploadImage(imageToUpload, `${identifier}.${mime2ext(imageToUpload.type)}`);
-        } catch (err) {
-          throw new FirebaseError();
-        }
+        await uploadImage(imageToUpload, `${identifier}.${mime2ext(imageToUpload.type)}`);
         foodDTO.imageSource = `${identifier}.webp`;
       }
       return saveFood(foodDTO);
@@ -84,6 +69,7 @@ export const useSaveFood = ({ setEditedFood }: IProps) => {
       });
     },
     onError: async (error) => {
+      console.log(error);
       if (error instanceof FirebaseError) {
         toast({
           title: t("admin.edit.save.error.image"),
@@ -124,7 +110,16 @@ export const useDeleteFood = (onCloseModal: () => void) => {
         isClosable: true,
       });
     },
-    onError: () => {
+    onError: (error) => {
+      if (error instanceof FirebaseError) {
+        toast({
+          title: t("admin.delete.error.image"),
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+        });
+        return;
+      }
       toast({
         title: t("admin.delete.error.generic-error"),
         status: "error",

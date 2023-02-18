@@ -2,6 +2,8 @@ import { useQuery } from "react-query";
 import { getCategories, getFoods } from "@/api-functions/menu/menu.query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Food, Paginated } from "@/domain/foods";
+import { getMessages } from "@/api-functions/menu/message.query";
+import { useToast } from "@chakra-ui/react";
 
 export const useCategories = () => {
   return useQuery("category", getCategories);
@@ -11,11 +13,22 @@ export const useCategories = () => {
 // I'll apply this logic:
 // if not filtering by category, filter by day (call)
 // if filtering by category, calls it without pagination, so it can apply quickly the day filter
-export const useFoods = (limit: number) => {
+
+interface UseFoodsProps {
+  category: string;
+  initialDay: number;
+  limit: number;
+}
+
+export const useFoods = ({ category, initialDay, limit }: UseFoodsProps = {
+  category: "",
+  initialDay: new Date().getDay(),
+  limit: 16,
+}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [filteredCategory, setCategory] = useState("");
-  const [filteredDay, setDay] = useState(new Date().getDay());
+  const [filteredCategory, setCategory] = useState(category);
+  const [filteredDay, setDay] = useState(initialDay);
   const [data, setData] = useState<Food[]>([]);
   const [paginatedData, setPaginatedData] = useState<Paginated<Food> | null>(null);
 
@@ -64,7 +77,7 @@ export const useFoods = (limit: number) => {
         (day) => day === filteredDay),
     ),
     [data, filteredDay]);
-  const { data: _, ...pagination } = paginatedData || { data: [], nextCursor: 0 };
+  const { data: _, ...pagination } = paginatedData || { data: [], nextCursor: "" };
   return {
     values: {
       category: filteredCategory,
@@ -81,4 +94,24 @@ export const useFoods = (limit: number) => {
       setDay,
     },
   };
+};
+
+
+export const useMessages = () => {
+  const toast = useToast();
+  return useQuery("messages", {
+    queryFn: getMessages,
+    onSuccess: (data) => {
+      data.forEach(({ title, content }) => {
+        toast({
+          title,
+          description: content,
+          variant: "left-accent",
+          isClosable: true,
+          status: "info",
+          duration: null,
+        });
+      });
+    },
+  });
 };

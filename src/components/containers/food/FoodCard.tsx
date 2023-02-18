@@ -11,7 +11,7 @@ interface IProps {
 
 function FoodCard({ food, onClick }: IProps) {
   return (
-    <Card onClick={() => onClick(food)}>
+    <Card onClick={() => onClick(food)} w={"100%"}>
       <CardHeader style={{ position: "relative", height: "6em" }}>
         <Image
           fill

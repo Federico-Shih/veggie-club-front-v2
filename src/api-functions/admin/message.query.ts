@@ -1,7 +1,7 @@
 import { authAxios } from "@/config/axios-config";
 import { Message } from "@/domain/messages";
 
-interface BackendMessage extends Omit<Message, "endDate"> {
+export interface BackendMessage extends Omit<Message, "endDate"> {
   endDate: {
     _seconds: number;
     _nanoseconds: number;

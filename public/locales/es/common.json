@@ -47,7 +47,8 @@
       "deletebutton": "Borrar",
       "success": "Plato borrado correctamente.",
       "error": {
-        "generic-error": "Error desconocido borrando."
+        "generic-error": "Error desconocido borrando.",
+        "image": "Error borrando imagen."
       }
     },
     "category": {

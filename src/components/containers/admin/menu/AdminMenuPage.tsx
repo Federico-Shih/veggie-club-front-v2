@@ -1,5 +1,5 @@
 import { useCategories } from "@components/containers/menu/menu.hooks";
-import { Button, Center, CircularProgress, Grid, GridItem, useDisclosure, useToast, VStack } from "@chakra-ui/react";
+import { Button, Center, CircularProgress, Grid, GridItem, useDisclosure, VStack } from "@chakra-ui/react";
 import { MdAdd } from "react-icons/md";
 
 import TagList from "@components/containers/categories/TagList";
@@ -8,7 +8,6 @@ import { useAdminFoods, useDeleteFood, useSaveFood } from "@components/container
 import FoodCard from "@components/containers/food/FoodCard";
 import FoodAdminModal from "@components/containers/food/FoodAdminModal";
 import { Food } from "@/domain/foods";
-import { useTranslation } from "next-i18next";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FoodDeleteModal from "@components/containers/food/FoodDeleteModal";
 import NoResults from "@components/containers/global/NoResults";
@@ -17,8 +16,6 @@ function AdminMenuPage() {
   const { isOpen: isAdminOpen, onOpen: onOpenAdmin, onClose: onCloseAdmin } = useDisclosure();
   const { isOpen: isDeleteOpen, onOpen: onOpenDelete, onClose: onCloseDelete } = useDisclosure();
 
-  const { t } = useTranslation();
-  const toast = useToast();
   const [selectedId, setSelected] = useState("");
   const [editedFood, setEditedFood] = useState<Food | null>(null);
 
@@ -53,7 +50,7 @@ function AdminMenuPage() {
           }
         </div>
         <InfiniteScroll
-          style={{ overflow: "hidden" }}
+          style={{ overflow: "hidden", width: "100vw", paddingLeft: 16, paddingRight: 16 }}
           next={fetchNextPage}
           hasMore={!!hasNextPage}
           loader={

@@ -63,7 +63,6 @@ function FoodAdminModal({
   const [selectedImage, setSelectedImage] = useState("");
   const [editedImage, setEditedImage] = useState("");
   const [editedImageBlob, setEditedImageBlob] = useState<Blob>();
-
   useEffect(() => {
     if (isOpen) {
       setSelectedImage("");
@@ -94,12 +93,27 @@ function FoodAdminModal({
             initialValues={food || emptyFood}
             onSubmit={
               async (values, actions) => {
-                if (_.isEqual(values, food)) {
+                /*
+                 Prevenir submit si:
+                 1. No tiene nombre
+                 2. Si son iguales y no se cambio la imagen
+                 */
+                if ((_.isEqual(values, food) && !editedImageBlob) || values.name === "") {
                   return;
                 }
-                const submitValues = { ...values };
+                const submitValues = { ...values, id: food?.id };
+                // Reemplazar imagen actual
                 if (editedImageBlob) {
                   submitValues.imageSource = editedImageBlob;
+                } else {
+                  // Si no se eligio imagen, el valor inicial es el plato original
+                  if (food) {
+                    submitValues.imageSource = food?.imageSource;
+                  } else {
+                    // Si no se eligio imagen y se quiere subir, agregar una imagen default
+                    const emptyImage = await fetch("/empty.jpg");
+                    submitValues.imageSource = await emptyImage.blob();
+                  }
                 }
                 await onSave({ foodDTO: submitValues, prevFood: food });
               }

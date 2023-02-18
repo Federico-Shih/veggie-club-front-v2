@@ -5,35 +5,38 @@ import Image from "next/image";
 import { Box, HStack, Tag, VStack } from "@chakra-ui/react";
 import React, { useMemo } from "react";
 import { getImageUrl, mapCategories } from "../menu.helpers";
+import { dayMapper } from "@components/containers/menu/day-selector/DaySelector";
 
 interface IProps {
   food: Food | null;
   categories: Category[];
   isOpen: boolean;
   onClose: () => void;
+  onDayTagClick: (day: number) => void;
+  onCategoryTagClick: (categoryId: string) => void;
 }
 
-function FoodModal({ food, categories: loadedCategories, isOpen, onClose }: IProps) {
+function FoodModal({ food, categories: loadedCategories, isOpen, onClose, onDayTagClick, onCategoryTagClick }: IProps) {
   const categoryMapper = useMemo(() => {
     return mapCategories(loadedCategories);
   }, [loadedCategories]);
   if (food === null) {
     return <></>;
   }
-  const { name, imageSource, description, categories } = food;
+  const { name, imageSource, description, categories, weekdays } = food;
   return (
     <Modal size={"sm"} isOpen={isOpen} onClose={onClose}>
       <ModalOverlay backdropFilter="blur(8px) hue-rotate(20deg)"
       />
-      <ModalContent>
+      <ModalContent gap={5}>
         <ModalHeader style={{ position: "relative" }}>
-          <div style={{ height: "10em", position: "relative" }}>
-            <Image fill src={getImageUrl(imageSource)} alt={name} style={{ objectFit: "cover" }} />
-          </div>
+          <ModalCloseButton />
         </ModalHeader>
-        <ModalCloseButton />
+        <div style={{ height: "14em", position: "relative", width: "100%" }}>
+          <Image fill src={getImageUrl(imageSource)} alt={name} style={{ objectFit: "cover" }} />
+        </div>
         <ModalBody>
-          <VStack alignItems={"start"}>
+          <VStack alignItems={"start"} gap={2}>
             <Box textStyle={"h1"}>
               {name}
             </Box>
@@ -43,8 +46,19 @@ function FoodModal({ food, categories: loadedCategories, isOpen, onClose }: IPro
             <HStack>
               {categories.map((categoryId) => (
                 categoryMapper.has(categoryId) &&
-                <Tag key={categoryId}>
+                <Tag key={categoryId} onClick={() => {
+                  onCategoryTagClick(categoryId);
+                }}>
                   {categoryMapper.get(categoryId)?.name}
+                </Tag>
+              ))}
+            </HStack>
+            <HStack>
+              {weekdays.map((number) => (
+                <Tag key={number} colorScheme={"orange"} onClick={() => {
+                  onDayTagClick(number);
+                }}>
+                  {dayMapper[number]}
                 </Tag>
               ))}
             </HStack>

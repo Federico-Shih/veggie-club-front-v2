@@ -4,9 +4,7 @@ export default function useAuth() {
   const auth = getAuth();
 
   const refreshToken = async () => {
-    const userToken = await auth.currentUser?.getIdToken();
-    sessionStorage.setItem("token", userToken || "");
-    return userToken;
+    return auth.currentUser?.getIdToken();
   };
 
   const signIn = async (email: string, password: string) => {

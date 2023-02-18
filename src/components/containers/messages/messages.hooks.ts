@@ -50,7 +50,7 @@ export const useRemoveMessage = () => {
       });
       await queryClient.invalidateQueries(["messages", "admin"]);
       toast({
-        title: t("error-creating-message"),
+        title: t("deleted-message"),
         status: "success",
         duration: 2000,
         isClosable: true,
@@ -58,7 +58,7 @@ export const useRemoveMessage = () => {
     },
     onError: () => {
       toast({
-        title: t("error-creating-message"),
+        title: t("error-deleting-message"),
         status: "error",
         duration: 2000,
         isClosable: true,
