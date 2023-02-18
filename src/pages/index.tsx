@@ -2,9 +2,9 @@ import Head from "next/head";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { TabsPage } from "@/components/Tabs";
-import MenuPage from "@components/containers/menu/MenuPage";
-import IntroductionPage from "@components/containers/intro/IntroductionPage";
-import ContactPage from "@components/containers/contact/ContactPage";
+import { dehydrate, QueryClient } from "react-query";
+import { getCategoriesSSR } from "@/api-functions/menu/menu.query";
+import dynamic from "next/dynamic";
 
 // const inter = Inter({ subsets: ['latin'] })
 
@@ -15,15 +15,15 @@ interface IProps {
 const tabInfo = [
   {
     tabKey: "tabs.menu",
-    PanelComponent: () => <MenuPage />,
+    PanelComponent: dynamic(() => import("@components/containers/menu/MenuPage"), { ssr: false }),
   },
   {
     tabKey: "tabs.introduction",
-    PanelComponent: () => <IntroductionPage />,
+    PanelComponent: dynamic(() => import("@components/containers/intro/IntroductionPage"), { ssr: false }),
   },
   {
     tabKey: "tabs.contact",
-    PanelComponent: () => <ContactPage />,
+    PanelComponent: dynamic(() => import("@components/containers/contact/ContactPage"), { ssr: false }),
   },
 ];
 
@@ -44,12 +44,17 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps<IProps> = async ({ locale }) => {
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ["category"],
+    queryFn: getCategoriesSSR,
+  });
   return ({
     props: {
       ...(
         await serverSideTranslations(locale ?? "es", ["common"])
       ),
-      // dehydratedState: dehydrate(queryClient),
+      dehydratedState: dehydrate(queryClient),
     },
   });
 };

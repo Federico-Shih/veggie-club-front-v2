@@ -17,13 +17,14 @@ import React, { useEffect, useMemo, useState } from "react";
 import { mapCategories } from "../menu.helpers";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { useTranslation } from "next-i18next";
-import TagSelector from "@components/containers/food/categories/TagSelector";
-import DaySelector from "@components/containers/food/weekdays/MultipleSelector";
-import { dayMapper } from "@components/containers/menu/day-selector/DaySelector";
-import EditImageModal from "@components/containers/food/image/EditImageModal";
-import SelectImageInput from "@components/containers/food/image/SelectImageInput";
 import { MdDelete, MdSave } from "react-icons/md";
-import _ from "lodash";
+import dynamic from "next/dynamic";
+import { dayMapper } from "@components/containers/menu/day-selector/DaySelector";
+import TagSelector from "@components/containers/food/categories/TagSelector";
+import MultipleSelector from "@components/containers/food/weekdays/MultipleSelector";
+
+const EditImageModal = dynamic(() => import("@components/containers/food/image/EditImageModal"), { ssr: false });
+const SelectImageInput = dynamic(() => import("@components/containers/food/image/SelectImageInput"), { ssr: false });
 
 const emptyFood: FoodDTO = {
   name: "",
@@ -98,6 +99,7 @@ function FoodAdminModal({
                  1. No tiene nombre
                  2. Si son iguales y no se cambio la imagen
                  */
+                const _ = (await import("lodash")).default;
                 if ((_.isEqual(values, food) && !editedImageBlob) || values.name === "") {
                   return;
                 }
@@ -169,7 +171,7 @@ function FoodAdminModal({
                           <FormControl>
                             <FormLabel>{t("admin.edit.categories")}</FormLabel>
                             <TagSelector
-                              removeElement={(category) => {
+                              removeElement={(category: Category) => {
                                 const index = values.categories.findIndex((categoryId) => (category.id === categoryId));
                                 if (index !== -1) {
                                   arrayHelpers.remove(index);
@@ -193,7 +195,7 @@ function FoodAdminModal({
                         render={arrayHelpers => (
                           <FormControl>
                             <FormLabel>{t("admin.edit.weekdays")}</FormLabel>
-                            <DaySelector
+                            <MultipleSelector
                               addElement={arrayHelpers.push}
                               removeElement={(day) => {
                                 const index = values.weekdays.findIndex((selectedDay) => selectedDay === day);

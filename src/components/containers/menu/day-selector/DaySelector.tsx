@@ -9,7 +9,7 @@ interface Props {
 
 export const dayMapper = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"];
 
-export function DaySelector({ setDay, initialDay }: Props) {
+function DaySelector({ setDay, initialDay }: Props) {
   const [open, setOpen] = useState(false);
   return (
     <div className={styles.fab}>
@@ -56,3 +56,5 @@ export function DaySelector({ setDay, initialDay }: Props) {
     </div>
   );
 }
+
+export default DaySelector;

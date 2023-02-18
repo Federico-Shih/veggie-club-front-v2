@@ -1,15 +1,16 @@
-import TagList from "@components/containers/categories/TagList";
 import { useCallback, useMemo, useState } from "react";
 import { CircularProgress, Grid, GridItem, Skeleton, Stack, useDisclosure, VStack } from "@chakra-ui/react";
 import { Food } from "@/domain/foods";
-import FoodCard from "@components/containers/food/FoodCard";
-import FoodModal from "@components/containers/food/FoodModal";
 import { useCategories, useFoods, useMessages } from "./menu.hooks";
-import { DaySelector } from "@components/containers/menu/day-selector/DaySelector";
-import InfiniteScroll from "react-infinite-scroll-component";
 import NoResults from "@components/containers/global/NoResults";
 import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
 
+const InfiniteScroll = dynamic(() => import("react-infinite-scroll-component"), { ssr: false });
+const FoodModal = dynamic(() => import("@components/containers/food/FoodModal"), { ssr: false });
+const DaySelector = dynamic(() => import("@components/containers/menu/day-selector/DaySelector"), { ssr: false });
+const TagList = dynamic(() => import("@components/containers/categories/TagList"), { ssr: false });
+const FoodCard = dynamic(() => import("@components/containers/food/FoodCard"), { ssr: false });
 type QueryParams = {
   category?: string;
   weekday?: number;

@@ -69,7 +69,6 @@ export const useSaveFood = ({ setEditedFood }: IProps) => {
       });
     },
     onError: async (error) => {
-      console.log(error);
       if (error instanceof FirebaseError) {
         toast({
           title: t("admin.edit.save.error.image"),

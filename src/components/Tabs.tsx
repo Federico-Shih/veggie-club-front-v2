@@ -1,10 +1,11 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { useTranslation } from "next-i18next";
+import { ComponentType } from "react";
 
 
 type TabData = {
   tabKey: string;
-  PanelComponent: () => JSX.Element;
+  PanelComponent: ComponentType<{}>;
 }
 
 interface IProps {

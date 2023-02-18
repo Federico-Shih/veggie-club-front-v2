@@ -68,7 +68,7 @@ export const useFoods = ({ category, initialDay, limit }: UseFoodsProps = {
   };
 
   useEffect(() => {
-    fetchPage(undefined, limit, filteredDay, true);
+    fetchPage("", limit, filteredDay, true);
   }, [fetchPage, filteredDay, limit]);
 
   const filteredDayData = useMemo(

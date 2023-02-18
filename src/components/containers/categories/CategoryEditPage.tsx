@@ -1,6 +1,5 @@
 import { useCategories } from "@components/containers/menu/menu.hooks";
 import { Button, Container, Grid, GridItem, useDisclosure } from "@chakra-ui/react";
-import CategoryEdit from "@components/containers/categories/category/CategoryEdit";
 import { Category } from "@/domain/categories";
 import { useDeleteCategory, useSaveCategory } from "@components/containers/admin/menu/admin.hooks";
 import { MdAdd } from "react-icons/md";
@@ -14,7 +13,10 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
 } from "@chakra-ui/modal";
-import CategoryAdd from "@components/containers/categories/category/CategoryAdd";
+import dynamic from "next/dynamic";
+
+const CategoryAdd = dynamic(() => import("@components/containers/categories/category/CategoryAdd"), { ssr: false });
+const CategoryEdit = dynamic(() => import("@components/containers/categories/category/CategoryEdit"), { ssr: false });
 
 interface MutableCategoryProps {
   category: Category;

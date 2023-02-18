@@ -1,24 +1,24 @@
 import Head from "next/head";
 import { GetServerSideProps } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { TabsPage } from "@components/Tabs";
-import { AuthGuard } from "@components/guards/AuthGuard";
-import AdminMenuPage from "@components/containers/admin/menu/AdminMenuPage";
-import CategoryEditPage from "@components/containers/categories/CategoryEditPage";
-import MessagesAdminPage from "@components/containers/messages/MessagesAdminPage";
+import { dehydrate, QueryClient } from "react-query";
+import { getCategoriesSSR } from "@/api-functions/menu/menu.query";
+import dynamic from "next/dynamic";
 
+const TabsPage = dynamic(() => import("@components/Tabs").then(mod => mod.TabsPage), { ssr: false });
+const AuthGuard = dynamic(() => import("@components/guards/AuthGuard").then(mod => mod.AuthGuard), { ssr: false });
 const tabInfo = [
   {
     tabKey: "tabs.categories",
-    PanelComponent: () => <CategoryEditPage />,
+    PanelComponent: dynamic(() => import("@components/containers/categories/CategoryEditPage"), { ssr: false }),
   },
   {
     tabKey: "tabs.menu",
-    PanelComponent: () => <AdminMenuPage />,
+    PanelComponent: dynamic(() => import("@components/containers/admin/menu/AdminMenuPage"), { ssr: false }),
   },
   {
     tabKey: "tabs.messages",
-    PanelComponent: () => <MessagesAdminPage />,
+    PanelComponent: dynamic(() => import("@components/containers/messages/MessagesAdminPage"), { ssr: false }),
   },
 ];
 
@@ -40,15 +40,24 @@ interface IProps {
 }
 
 export const getServerSideProps: GetServerSideProps<IProps> = async ({ locale }) => {
-  // const queryClient = new QueryClient();
-  // const categoryPromise = queryClient.prefetchQuery("category", getCategories);
-  // await Promise.all([categoryPromise]);
+  const queryClient = new QueryClient();
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ["category"],
+      queryFn: getCategoriesSSR,
+    }),
+    // queryClient.prefetchQuery({
+    //   queryKey: ["admin", "food", ""],
+    //   queryFn: () => getAllFoodsSSR("", undefined, 16)
+    // })
+  ]);
   return ({
     props: {
       ...(
         await serverSideTranslations(locale ?? "es", ["common"])
       ),
-      // dehydratedState: dehydrate(queryClient),
+      dehydratedState: dehydrate(queryClient),
     },
   });
 };
+

@@ -1,11 +1,13 @@
 import { Button, Center, CircularProgress, Container, Heading, Skeleton, VStack } from "@chakra-ui/react";
 import { useAdminMessages, useRemoveMessage, useSaveMessage } from "@components/containers/messages/messages.hooks";
 import { Message } from "@/domain/messages";
-import MessageCard from "@components/containers/messages/message/MessageCard";
 import { MdAdd } from "react-icons/md";
 import { useTranslation } from "next-i18next";
 import { useQueryClient } from "react-query";
 import { useCallback } from "react";
+import dynamic from "next/dynamic";
+
+const MessageCard = dynamic(() => import("@components/containers/messages/message/MessageCard"), { ssr: false });
 
 const getEmptyMessage = () => ({
   title: "",

@@ -4,7 +4,7 @@ import { Flex } from "@chakra-ui/react";
 function IntroductionPage() {
   return (
     <Flex flexDirection="column" alignItems="center">
-      <Image src="/logo.png" width={80} height={120} alt="veggielogo" />
+      <Image style={{ height: "auto" }} src="/logo.png" width={80} height={120} alt="veggielogo" />
     </Flex>
   );
 }

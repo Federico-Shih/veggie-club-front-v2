@@ -1,16 +1,17 @@
 import { useCategories } from "@components/containers/menu/menu.hooks";
 import { Button, Center, CircularProgress, Grid, GridItem, useDisclosure, VStack } from "@chakra-ui/react";
 import { MdAdd } from "react-icons/md";
-
-import TagList from "@components/containers/categories/TagList";
 import { useState } from "react";
 import { useAdminFoods, useDeleteFood, useSaveFood } from "@components/containers/admin/menu/admin.hooks";
-import FoodCard from "@components/containers/food/FoodCard";
-import FoodAdminModal from "@components/containers/food/FoodAdminModal";
 import { Food } from "@/domain/foods";
-import InfiniteScroll from "react-infinite-scroll-component";
-import FoodDeleteModal from "@components/containers/food/FoodDeleteModal";
-import NoResults from "@components/containers/global/NoResults";
+import dynamic from "next/dynamic";
+
+const TagList = dynamic(() => import("@components/containers/categories/TagList"), { ssr: false });
+const InfiniteScroll = dynamic(() => import("react-infinite-scroll-component"), { ssr: false });
+const FoodCard = dynamic(() => import("@components/containers/food/FoodCard"), { ssr: false });
+const FoodAdminModal = dynamic(() => import("@components/containers/food/FoodAdminModal"), { ssr: false });
+const FoodDeleteModal = dynamic(() => import("@components/containers/food/FoodDeleteModal"), { ssr: false });
+const NoResults = dynamic(() => import("@components/containers/global/NoResults"), { ssr: false });
 
 function AdminMenuPage() {
   const { isOpen: isAdminOpen, onOpen: onOpenAdmin, onClose: onCloseAdmin } = useDisclosure();
