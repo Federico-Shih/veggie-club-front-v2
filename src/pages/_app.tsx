@@ -11,6 +11,7 @@ import { ToastProvider } from "@chakra-ui/toast";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { Flex, IconButton } from "@chakra-ui/react";
 import { MdLogin } from "react-icons/md";
+import "@fontsource/poppins";
 
 function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient({ defaultOptions: { queries: { staleTime: 1000 * 20 } } }));

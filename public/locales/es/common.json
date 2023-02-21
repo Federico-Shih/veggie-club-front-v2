@@ -76,5 +76,11 @@
   "error-creating-message": "Error creando mensaje",
   "deleted-message": "Mensaje borrado",
   "error-deleting-message": "Error borrando mensaje",
-  "alldays": "todos"
+  "alldays": "todos",
+  "intro": {
+    "1": "Una forma diferente de disfrutar comida vegetariana",
+    "veggieclub-title": "Veggie club",
+    "2": "Siempre con frutas y verduras de estación, la forma más sustentable de disfrutar la comida. ",
+    "3": "Variedad inmensa, con miles de formas de combinar cada plato que te llevas "
+  }
 }
