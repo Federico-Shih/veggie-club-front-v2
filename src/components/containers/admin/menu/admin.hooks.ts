@@ -19,7 +19,7 @@ import mime2ext from "mime2ext";
 import { FirebaseError } from "@firebase/app";
 
 
-export const useAdminFoods = (categoryId: string, limit: 16) => {
+export const useAdminFoods = (categoryId: string, limit = 16) => {
   const { refreshToken } = useAuth();
   return useInfiniteQuery(["admin", "food", categoryId], (context) => {
     return getAllFoods(context.queryKey[2] ? context.queryKey[2] : undefined, context.pageParam, limit);

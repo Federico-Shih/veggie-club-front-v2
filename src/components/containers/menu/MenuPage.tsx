@@ -39,7 +39,9 @@ function MenuPage() {
     }
     return "";
   }, [category]);
-  const { values, actions } = useFoods({ initialDay, category: filteredCategory, limit: 16 });
+  const { data: categories, isSuccess: isCategorySuccess } = useCategories();
+
+  const { values, actions } = useFoods({ initialDay, category: filteredCategory, limit: 20 });
 
   const getNextQueryParams = useCallback((newParams: QueryParams) => {
     const prevParams = { weekday, category, ...newParams };
@@ -53,7 +55,6 @@ function MenuPage() {
   }, [category, weekday]);
 
 
-  const { data: categories, isSuccess: isCategorySuccess } = useCategories();
   return (
     <>
       <VStack gap={5} style={{ paddingLeft: 16, paddingRight: 16 }}>
@@ -69,7 +70,7 @@ function MenuPage() {
           }
         </div>
         <InfiniteScroll
-          style={{ width: "100vw", padding: "0 16px 0 16px" }}
+          style={{ width: "100vw", padding: "0 16px 0 16px", overflow: "hidden" }}
           next={actions.fetchNextPage}
           hasMore={(!!values.pagination?.nextCursor) && values.category.length === 0}
           dataLength={values.data.length}

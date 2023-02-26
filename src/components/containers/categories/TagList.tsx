@@ -10,7 +10,7 @@ interface IProps {
 
 function TagList({ categories, selectedId, onSelectTag }: IProps) {
   return (
-    <HStack spacing="10px" overflowX="scroll">
+    <HStack spacing="10px" overflowX="scroll" overflowY="hidden">
       {
         categories.map(({ name, id }) => (
           <div key={id} className={styles.tag}>

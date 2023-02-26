@@ -27,7 +27,7 @@ function AdminMenuPage() {
     fetchNextPage,
     hasNextPage,
     isLoading: foodIsLoading,
-  } = useAdminFoods(selectedId, 16);
+  } = useAdminFoods(selectedId, 30);
   const { mutate: mutateFood, isLoading: isSaving } = useSaveFood({ setEditedFood });
   const { mutate: onDeleteFood, isLoading } = useDeleteFood(onCloseAdmin);
 

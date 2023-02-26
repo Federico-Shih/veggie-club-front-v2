@@ -9,7 +9,7 @@ const nextConfig = {
       {
         source: "/api/:path*",
         destination: `${process.env.BACKEND_URL}/:path*`,
-      },
+      }
     ];
   },
   images: {
@@ -21,6 +21,20 @@ const nextConfig = {
         pathname: "/v0/b/veggieclub-ar.appspot.com/o/**",
       },
     ],
+  },
+  async headers() {
+    return [
+      {
+        source: "/:all*(svg|jpg|png|webp)",
+        locale: false,
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=9999999999, must-revalidate",
+          },
+        ],
+      },
+    ];
   },
 };
 
