@@ -81,6 +81,13 @@ function FoodAdminModal({
     return food ? food : emptyFood;
   }, [food]);
 
+  const validateLength = (fieldName: string) => {
+    return (value: string) => {
+      if (value.trim().length >= 30) return t("admin.edit.save.error.length").replace("%", t(fieldName));
+      return undefined;
+    };
+  };
+
   const { imageSource } = shownFood;
 
   return (
@@ -103,6 +110,7 @@ function FoodAdminModal({
                 if ((_.isEqual(values, food) && !editedImageBlob) || values.name === "") {
                   return;
                 }
+
                 const submitValues = { ...values, id: food?.id };
                 // Reemplazar imagen actual
                 if (editedImageBlob) {
@@ -143,10 +151,10 @@ function FoodAdminModal({
                   </div>
                   <ModalBody>
                     <VStack alignItems={"start"}>
-                      <Field name={"name"}>
+                      <Field name={"name"} validate={validateLength("admin.edit.field.name")}>
                         {
                           ({ field, form }: any) => (
-                            <FormControl>
+                            <FormControl isInvalid={form.errors.name && form.touched.name}>
                               <FormLabel>{t("admin.edit.name")}</FormLabel>
                               <Input {...field} placeholder={"name"} />
                               <FormErrorMessage>{form.errors.name}</FormErrorMessage>

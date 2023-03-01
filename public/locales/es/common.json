@@ -33,11 +33,15 @@
         "error": {
           "title": "Error guardando.",
           "generic-error": "Desconocido, comunicarse con Fede.",
-          "image": "Error guardando imagen."
+          "image": "Error guardando imagen.",
+          "length": "El campo % tiene que tener menor que 30 carácteres."
         },
         "success": {
           "title": "Se guardó correctamente"
         }
+      },
+      "field": {
+        "name": "nombre"
       }
     },
     "delete": {
