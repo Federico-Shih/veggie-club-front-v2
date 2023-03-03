@@ -96,12 +96,14 @@ export const useFoods = ({ category, initialDay, limit }: UseFoodsProps = {
   };
 };
 
+export const HAS_RETRIEVED_MESSAGES = "retrieved-messages";
 
-export const useMessages = () => {
+export const useMessages = (enabled = false) => {
   const toast = useToast();
   return useQuery("messages", {
     queryFn: getMessages,
     onSuccess: (data) => {
+      localStorage.setItem(HAS_RETRIEVED_MESSAGES, (new Date()).toString());
       data.forEach(({ title, content }) => {
         toast({
           title,
@@ -113,5 +115,6 @@ export const useMessages = () => {
         });
       });
     },
+    enabled,
   });
 };

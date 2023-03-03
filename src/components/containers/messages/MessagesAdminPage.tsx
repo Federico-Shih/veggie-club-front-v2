@@ -31,7 +31,6 @@ function MutableMessageCard({ message, index, onRemove }: MutableMessageProps) {
       message={message}
       onSubmit={onSaveMessage}
       onDelete={(message) => {
-        console.log(message.id);
         if (message.id.length !== 0) {
           return onDeleteMessage(message);
         }

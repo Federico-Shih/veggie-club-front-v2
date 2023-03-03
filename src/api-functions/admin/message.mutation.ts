@@ -1,7 +1,7 @@
 import { Message, MessageDTO } from "@/domain/messages";
 import { authAxios } from "@/config/axios-config";
 
-export const saveMessage = async ({ id, ...messageDTO }: MessageDTO) => {
+export const saveMessage = async ({ id, ...messageDTO }: MessageDTO): Promise<Message> => {
   let route = "/api/message";
   if (id) {
     route = `${route}/${id}`;

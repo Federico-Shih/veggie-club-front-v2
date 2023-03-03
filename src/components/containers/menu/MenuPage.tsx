@@ -1,7 +1,7 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CircularProgress, Grid, GridItem, Skeleton, Stack, useDisclosure, VStack } from "@chakra-ui/react";
 import { Food } from "@/domain/foods";
-import { useCategories, useFoods, useMessages } from "./menu.hooks";
+import { HAS_RETRIEVED_MESSAGES, useCategories, useFoods, useMessages } from "./menu.hooks";
 import NoResults from "@components/containers/global/NoResults";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
@@ -21,7 +21,22 @@ function MenuPage() {
   const { weekday, category } = router.query;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [shownFood, setShownFood] = useState<Food | null>(null);
-  const messages = useMessages();
+  const [showMessages, setShowMessages] = useState(false);
+  useMessages(showMessages);
+
+  useEffect(() => {
+    const cookieValue = localStorage.getItem(HAS_RETRIEVED_MESSAGES);
+    if (cookieValue) {
+      const lastMessageDate = new Date(cookieValue);
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+      lastMessageDate.setHours(0, 0, 0, 0);
+      if (lastMessageDate.getTime() >= currentDate.getTime()) {
+        return;
+      }
+    }
+    setShowMessages(true);
+  }, []);
 
   const initialDay = useMemo(() => {
     if (typeof weekday === "string") {

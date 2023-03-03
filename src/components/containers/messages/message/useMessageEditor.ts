@@ -13,6 +13,7 @@ function useMessageEditor(initialMessage: Message) {
         content,
         endDate: new Date(date),
         active,
+        id: initialMessage.id,
       };
     }
   };
