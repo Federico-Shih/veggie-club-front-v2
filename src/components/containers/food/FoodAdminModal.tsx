@@ -83,7 +83,7 @@ function FoodAdminModal({
 
   const validateLength = (fieldName: string) => {
     return (value: string) => {
-      if (value.trim().length >= 30) return t("admin.edit.save.error.length").replace("%", t(fieldName));
+      // if (value.trim().length >= 30) return t("admin.edit.save.error.length").replace("%", t(fieldName));
       return undefined;
     };
   };
